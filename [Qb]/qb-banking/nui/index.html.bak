@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <link href="scripting/jquery-ui.css" rel="stylesheet">
+    <!--
+    <link rel="stylesheet" href="https://assets.pixelworldrp.com/fonts/pro.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/b-1.5.6/fc-3.2.5/kt-2.5.0/r-2.2.2/datatables.min.css"/>-->
+ 
+    <title>Bankverksamhet</title>
+  </head>
+  <body>
+
+    <div class="container" id="bankingContainer">
+        <div class="row">
+            <div class="col-3">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <img src="images/logo.png" class="img-fluid">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="nav flex-column nav-pills p-2 shadow-lg" id="v-pills-tab" role="tablist" aria-orientation="vertical" style="background:rgba(51, 51, 51, 0.8); border-radius: 5px; border: 2px solid red;">
+                                <a class="nav-link active m-1" id="bankingHome-tab" data-toggle="pill" href="#bankingHome" role="tab" aria-controls="bankingHome" aria-selected="true" style= "color: white">Konto Hem</a>
+                                <a class="nav-link m-1" id="bankingWithdraw-tab" data-toggle="pill" href="#bankingWithdraw" role="tab" aria-controls="bankingWithdraw" aria-selected="false" style= "color: white">Uttag</a>
+                                <a class="nav-link m-1" id="bankingDeposit-tab" data-toggle="pill" href="#bankingDeposit" role="tab" aria-controls="bankingDeposit" aria-selected="false" style= "color: white">Deposition</a>
+                                <a class="nav-link m-1" id="bankingTransfer-tab" data-toggle="pill" href="#bankingTransfer" role="tab" aria-controls="bankingTransfer" aria-selected="false" style= "color: white">Överföra</a>
+                                <!--<a class="nav-link m-1" id="bankingStatement-tab" data-toggle="pill" href="#bankingStatement" role="tab" aria-controls="bankingStatement" aria-selected="false">Statement</a>-->
+                                <a class="nav-link m-1" id="bankingSavings-tab" style="display:none; color: white;" data-toggle="pill" href="#bankingSavings" role="tab" aria-controls="bankingSavings" aria-selected="false">Sparkonto</a>
+                                <a class="nav-link m-1" id="bankingActions-tab" data-toggle="pill" href="#bankingActions" role="tab" aria-controls="bankingActions" aria-selected="false" style= "color: white">Konto alternativ</a>
+                              </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red;">
+                                <div class="card-header">Kontoinformation</div>
+                                    <div class="card-body">
+                                        <p class="card-text" style="color: white;"><small>
+                                        Kontonamn: <span id="accountName"></span><br>
+                                        Kontonummer: <span id="accountNumber"></span><br>
+                                        <!--Account Sort Code: <span id="accountSortCode">-->
+
+                                        </span></small></p>
+                                    </div>
+                                </div>  
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="btn btn-block" id="logoffbutton" style="background-color: red; color: white">Logga ut</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <div class="col-9">
+                <!-- Content Area -->
+                <div class="tab-content p-2 shadow-lg" id="v-pills-tabContent" style="max-height:780px; min-height:780px;">
+                    <div class="tab-pane fade show active" id="bankingHome" role="tabpanel" aria-labelledby="bankingHome-tab" style="position: relative; top: 54px;">
+                        <div class="container-fluid p-2">
+                            <div class="row">
+                                <div class="col-12 title"><h3 style="font-size: 35px;">Välkommen, <span id="customerName"></span></h3></div>
+                            </div>
+                        <div class="row" id="successRow" style="display:none;">
+                            <div class="col-12">
+                                <div class="alert alert-success" role="alert" id="successMessage"></div>
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red;">
+                                <div class="card-header"><i class="fad fa-fw fa-money-bill-wave"></i> Nuvarande banksaldo:</div>
+                                <div class="card-body">
+                                  <h5 class="card-title" style="color: green;" id="currentBalance"></h5>
+                                  <p class="card-text" style="color: white;">Totalt belopp tillgängligt för uttag/överföring</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red;">
+                                <div class="card-header"><i class="fad fa-fw fa-coin"></i> Nuvarande kassasaldo:</div>
+                                <div class="card-body">
+                                  <h5 class="card-title" style="color: green;" id="currentCashBalance"></h5>
+                                  <p class="card-text" style="color: white;">Totalt belopp tillgängligt att sätta in</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); border: 2px solid red;">
+                                <div class="card-header" style="color: white"><i class="fad fa-fw fa-pencil-alt"></i> Snabba åtgärder:</div>
+                                <div class="card-body">
+                                    <div class="container-fluid">
+                                        <div class="row m-1">
+                                            <div class="col-4"><button class="btn btn-primary btn-block" data-action="deposit" data-amount="100">Deposition kr100</button></div>
+                                            <div class="col-4"><button class="btn btn-primary btn-block" data-action="deposit" data-amount="1000">Deposition kr1,000</button></div>
+                                            <div class="col-4"><button class="btn btn-primary btn-block" data-action="deposit" data-amount="10000">Deposition lr10,000</button></div>
+                                        </div>
+                                        <div class="row m-1">
+                                            <div class="col-4"><button class="btn btn-secondary btn-block" data-action="withdraw" data-amount="100">Dra tillbaka kr100</button></div>
+                                            <div class="col-4"><button class="btn btn-secondary btn-block" data-action="withdraw" data-amount="1000">Dra tillbaka kr1,000</button></div>
+                                            <div class="col-4"><button class="btn btn-secondary btn-block" data-action="withdraw" data-amount="10000">Dra tillbaka kr10,000</button></div>
+                                        </div>
+                                        <div class="row m-1">
+                                            <div class="col-6">
+                                                <button class="btn btn-info btn-block" id="savingsQuicky1" style="display:none;" data-action="savingsdeposit" data-amount="10000">Överföra $10,000 lägg in pengar i spar kontot</button>
+                                            </div>
+                                            <div class="col-6">
+                                                <button class="btn btn-info btn-block" id="savingsQuicky2" style="display:none;" data-action="savingswithdraw" data-amount="10000">Överföra $10,000 Lägg in pengar som kontanter</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                              </div>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="tab-pane fade" id="bankingWithdraw" role="tabpanel" aria-labelledby="bankingWithdraw-tab">
+                        <div class="container-fluid p-2" style="position: relative; top: 54px;">
+                            <div class="row">
+                                <div class="col-12 title"><h3 style="font-size: 35px;">Uttag</h3></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12" style="font-size: 12px; color: white;">
+                                    Ta ut pengar från ditt bankkonto. För att ta ut pengar från ditt sparkonto måste du först överföra dem.
+                                </div>
+                            </div>
+                            <div class="row" style="position: relative; top: 20px;">
+                                    <div class="col-6">
+                                        <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red;">
+                                            <div class="card-header"><i class="fad fa-fw fa-money-bill-wave"></i> Nuvarande banksaldo:</div>
+                                            <div class="card-body">
+                                              <h5 class="card-title" style="color: green;" id="currentBalance1"></h5>
+                                              <p class="card-text" style="color: white;">Totalt belopp tillgängligt för uttag/överföring</p>
+                                            </div>
+                                          </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red;">
+                                            <div class="card-header"><i class="fad fa-fw fa-coin"></i> Nuvarande kassasaldo:</div>
+                                            <div class="card-body">
+                                              <h5 class="card-title" style="color: green;" id="currentCashBalance1"></h5>
+                                              <p class="card-text" style="color: white;">Totalt belopp tillgängligt att sätta in</p>
+                                            </div>
+                                          </div>
+                                    </div>
+                                </div>
+                            <div class="row" style="position: relative; top: 20px;">
+                                <div class="col-12">
+                                    <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red;">
+                                        <div class="card-body">
+                                            <div class="container-fluid">
+                                                <div class="row" id="withdrawError" style="display:none;">
+                                                    <div class="col-12">
+                                                        <div class="alert alert-danger" role="alert" id="withdrawErrorMsg">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-2">
+                                                    <div class="col-3 my-auto" style="font-size: 19px; color: white;"><label for="withdrawAmount"><small>Summa att ta ut:</small></label></div>
+                                                    <div class="col-9"><input type="number" placeholder="$" class="form-control" id="withdrawAmount" name="withdrawAmount"></div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="position: relative; top: 20px;">
+                                <div class="col-12 text-center"><button class="btn" style="background-color: green; color: white" id="initiateWithdraw">Fullständigt uttag</button></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="bankingDeposit" role="tabpanel" aria-labelledby="bankingDeposit-tab">
+                            <div class="container-fluid p-2" style="position: relative; top: 54px;">
+                                    <div class="row">
+                                        <div class="col-12 title"><h3 style="font-size: 35px;">Insättningar</h3></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12" style="font-size: 12px; color: white;">
+                                            Sätt in pengar på ditt bankkonto. För att sätta in pengar på ditt sparkonto överför du dem helt enkelt från din bank efter din första insättning.
+                                        </div>
+                                    </div>
+                                    <div class="row" style="position: relative; top: 20px;">
+                                            <div class="col-6">
+                                                <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red;">
+                                                    <div class="card-header"><i class="fad fa-fw fa-money-bill-wave"></i> Nuvarande banksaldo:</div>
+                                                    <div class="card-body">
+                                                      <h5 class="card-title" style="color: green;" id="currentBalance2"></h5>
+                                                      <p class="card-text" style="color: white;">Totalt belopp tillgängligt för uttag/överföring</p>
+                                                    </div>
+                                                  </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red;">
+                                                    <div class="card-header"><i class="fad fa-fw fa-coin"></i> Nuvarande kassasaldo:</div>
+                                                    <div class="card-body">
+                                                      <h5 class="card-title" style="color: green;" id="currentCashBalance2"></h5>
+                                                      <p class="card-text" style="color: white;">Totalt belopp tillgängligt att sätta in</p>
+                                                    </div>
+                                                  </div>
+                                            </div>
+                                        </div>
+                                    <div class="row" style="position: relative; top: 20px;">
+                                        <div class="col-12">
+                                                <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red;">
+                                                        <div class="card-body">
+                                                            <div class="container-fluid">
+                                                                <div class="row" id="depositError" style="display:none;">
+                                                                    <div class="col-12">
+                                                                        <div class="alert alert-danger" role="alert" id="depositErrorMsg">
+                                                                            
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mt-2">
+                                                                    <div class="col-3 my-auto" style="font-size: 19px; color: white;"><label for="depositAmount"><small>Belopp att sätta in:</small></label></div>
+                                                                    <div class="col-9"><input type="number" placeholder="$" class="form-control" id="depositAmount" name="depositAmount"></div>
+                                                                </div>
+                                                            </div>
+        
+                                                        </div>
+                                                      </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="position: relative; top: 20px;">
+                                        <div class="col-12 text-center"><button class="btn" style="background-color: green; color: white" id="initiateDeposit">Komplett insättning</button></div>
+                                    </div>
+                                </div>
+                    </div>
+                    <div class="tab-pane fade" id="bankingTransfer" role="tabpanel" aria-labelledby="bankingTransfer-tab">
+
+                        <div class="container-fluid p-2" style="position: relative; top: 54px;">
+                            <div class="row">
+                                <div class="col-12 title"><h3 style="font-size: 35px;">Överföringar</h3></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12" style="font-size: 12px; color:white">Överför pengar till ett annat konto genom att helt enkelt ange det dedikerade numret för det kontot och beloppet som ska överföras.
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12" style="position: relative; top: 20px;">
+                                    <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red;">
+                                        <div class="card-body">
+                                            <div class="container-fluid">
+                                                <div class="row" id="transferError" style="display:none;">
+                                                    <div class="col-12">
+                                                        <div class="alert alert-danger" role="alert" id="transferErrorMsg">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <!-- form -->
+                                                        <div class="container-fluid">
+                                                            <div class="row m-1">
+                                                                <div class="col-3 my-auto" style="font-size: 19px; color: white;"><label for="transferAcctNo"><small>Kontonummer:</small></label></div>
+                                                                <div class="col-9"><input type="text" id="transferAcctNo" name="transferAcctNo" class="form-control" maxlength="8"></div>
+                                                            </div>
+                                                            <div class="row m-1">
+                                                                    <div class="col-3 my-auto" style="font-size: 19px; color: white;"><label for="transferAmount"><small>Belopp att överföra:</small></label></div>
+                                                                    <div class="col-9"><input type="number" id="transferAmount" name="transferAmount" class="form-control" placeholder="$"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-center" style="position: relative; top: 20px;">
+                                    <button class="btn" id="initiateTransfer" style="background-color: green; color: white">Komplett överföring</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="bankingStatement" role="tabpanel" aria-labelledby="bankingStatement-tab">
+                        <div class="container-fluid p-2">
+                            <div class="row">
+                                <div class="col-12 title"><h3>Aktuellt kontoutdrag</h3></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                        <div class="card bg-light mb-3">
+                                                <div class="card-body">
+                                        <table id="currentStatement" class="display" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Datum</th>
+                                                    <th>Beskrivning</th>
+                                                    <th class="text-center">Indragen</th>
+                                                    <th class="text-center">Deposition</th>
+                                                    <th class="text-center">Ny balans</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="currentStatementContents">
+                                            </tbody>
+                                        </table></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="bankingSavings" role="tabpanel" aria-labelledby="bankingSavings-tab">
+                        <div class="container-fluid p-2" style="position: relative; top: 54px;">
+                            <div class="row">
+                                <div class="col-12 title"><h4 style="font-size: 35px;">Sparkonto</h4></div>
+                            </div>
+                            <div class="row" style="position: relative; top: 20px;">
+                                <div class="col-4" style="color: #00af17">
+                                    <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: red; min-height:150px; border: 2px solid red;">
+                                    <div class="card-header"><i class="fad fa-fw fa-money-bill-wave"></i> Sparkontosaldo:</div>
+                                    <div class="card-body">
+                                        <h5 class="card-title">$<span id="savingsBalance"></span></h5>
+                                        <p class="card-text" style="font-size: 10px; color: white;">Det är just nu hur mycket du har sparat på ditt sparkonto</p>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-8">
+                                <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: red; border: 2px solid red;">
+                                    <div class="card-header">Sparande Uttag och insättningar</div>
+                                    <div class="card-body">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-4"><label for="savingsAction"><small>Handling</small></label>
+                                                    <select name="savingsAction" id="savingsAction" class="form-control" style="font-size: 13px;">
+                                                        <option selected disabled value="def">Vänligen välj</option>
+                                                        <option value="deposit">Deposition</option>
+                                                        <option value="withdraw">Uttag</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-4">
+                                                    <label for="savingsTAmount"><small>Begärt belopp</small></label>
+                                                    <input type="number" id="savingsTAmount" name="savingsTAmount" class="form-control" placeholder="$" style="font-size: 13px;">
+                                                </div>
+                                                <div class="col-4 my-auto">
+                                                    <button class="btn btn-block" id="makeSavingsTransfer" style="background-color: green; font-size: 12px; color: white">Komplett förfrågan</button>
+                                                </div>
+                                            </div>                            
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="position: relative; top: 60px">
+                        <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: red; border: 2px solid red;">
+                                <div class="card-header">Sparkontoutdrag</div>
+                                <div class="card-body">
+                        <table id="savingsStatement" class="display" style="width:100%">
+                            <thead>
+                                <tr style="font-size: 14px; color: white;">
+                                    <th>Datum</th>
+                                    <th>Beskrivning</th>
+                                    <th class="text-center">Indragen</th>
+                                    <th class="text-center">Deposition</th>
+                                    <th class="text-center">Ny balans</th>
+                                </tr>
+                            </thead>
+                            <tbody id="savingsStatementContents" style="font-size: 14px;">
+                            </tbody>
+                        </table></div>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="tab-pane fade" id="bankingActions" role="tabpanel" aria-labelledby="bankingActions-tab" style="position: relative; top: 54px;">
+                        <div class="container-fluid p-2">
+                            <div class="row">
+                                <div class="col-12 title"><h3 style="font-size: 35px;">Konto alternativ</h3></div>
+                            </div>
+                            <div class="row"><div class="col-12 content" style="font-size: 12px;">
+                                <p>Från avsnittet Kontoalternativ kan du hantera alla aspekter av din bankupplevelse med QBCore Banks, från att beställa ett nytt betalkort, ändra dina pins och till och med skapa ett sparkonto.</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                                <div class="col-12">
+                                        <div class="card mb-3" style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red">
+                                                <div class="card-header" style="color: white">Betalkortshantering</div>
+                                                <div class="card-body">
+                                                    <!-- Card In-Active Container -->
+                                                    <div class="container-fluid" id="cardInactive" style="display:none;">
+                                                        <div class="row">
+                                                            <div class="col-12 content" style="font-size: 16px;">
+                                                                <p>Du kan beställa ett betalkort till dig själv så att du kan använda bankomater och betal med kortfunktioner som tillhandahålls kostnadsfritt av bank Management.</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <button class="btn btn-block" id="orderCardBtn" style="background:green; color: white;">Order Debit Card</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Order Card Screen -->
+                                                    <div class="container-fluid" id="cardOrdering" style="display:none;">
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <p>För att beställa ett nytt betalkort måste du först ställa in ett personligt identifieringsnummer (PIN) detta gör att du kan använda ditt kort i bankomater</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row" id="pinCreatorError" style="display:none;">
+                                                                <div class="col-12">
+                                                                    <div class="alert alert-warning" role="alert" id="pinCreatorErrorMsg">
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-3 my-auto">
+                                                                    <label for="cardPinNumber"><small>Personal Pin</small></label>
+                                                                </div>
+                                                                <div class="col-9">
+                                                                    <input type="number" maxlength="4" id="cardPinNumber" name="cardPinNumber" class="form-control">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mt-2">
+                                                                <div class="col-12 text-center "><button class="btn btn-info" id="processCard">Beställningskort</button></div>
+                                                            </div>
+                                                        </div>
+                                                    <!-- Card Active Container -->
+                                                    <div class="container-fluid" id="cardDetails" style="display:none;">
+                                                        <div class="row">
+
+                                                            <div class="col-4">
+                                                                <div class="card text-white bg-info mb-3" id="debitCardPin" style="min-height:230px">
+                                                                    <div class="card-header">Byt kod</div>
+                                                                    <div class="card-body">Din kod är.</div>
+                                                                    <div class="card-footer">
+                                                                    <button class="btn btn-primary btn-block" id="changePin">But kod</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-4">
+                                                                <div class="card text-white bg-dark mb-3" id="requestNewCard1" style="min-height:230px; display:block;">
+                                                                    <div class="card-header">Begär nytt kortAktuellt aktivt kort</div>
+                                                                    <div class="card-body">Current Active Card<br>
+                                                                        <small><span id="cardType">Visa</span><br>
+                                                                        <span id="cardNumberShow">************3455</span></small>
+                                                                    </div>
+                                                                    <div class="card-footer">
+                                                                    <button class="btn btn-primary btn-block" id="makeNewCardRequestBtn1">Gör förfrågan</button>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="card text-white bg-dark mb-3" id="requestNewCard2" style="min-height:230px; display:none;">
+                                                                    <div class="card-header">Bekräfta begäran</div>
+                                                                    <div class="card-body"><small>Genom att göra denna begäran kommer ditt gamla kort att spärras.</small>
+
+                                                                    </div>
+                                                                    <div class="card-footer text-center">
+                                                                    <button class="btn btn-success btn-sm" id="confirmCardRequest">Bekräfta</button> <button class="btn btn-danger btn-sm" id="cancelNewCardReq">Avbryt</button>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="card text-white bg-success mb-3" id="requestNewCard3" style="min-height:230px; display:none;">
+                                                                    <div class="card-header">Begäran bekräftad</div>
+                                                                    <div class="card-body"><small>Du har fått ett nytt kort och ditt tidigare har spärrats.</small>
+
+                                                                    </div>
+                                                                    <div class="card-footer text-center">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="col-4">
+                                                                <div class="card text-white bg-success mb-3" id="debitCardStatus" style="min-height:230px">
+                                                                    <div class="card-header">Kort upplåst</div>
+                                                                    <div class="card-body">Ditt kort är för närvarande aktivt.</div>
+                                                                    <div class="card-footer">
+                                                                    <button class="btn btn-primary btn-block" id="lockCard">Lås/blockera kort</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" id="createNewPin" style="display:none;">
+                                                            <div class="col-12">
+                                                                    <div class="card bg-light mb-3">
+                                                                            <div class="card-header">Skapa en ny pin kod</div>
+                                                                            <div class="card-body">
+                                                                                <div class="container-fluid">
+                                                                                    <div class="row" id="newPinReqMsgDiv" style="display:none;">
+                                                                                        <div class="col-12">
+                                                                                            <div class="alert alert-danger" role="alert" id="newPinReqMsg">
+
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row">
+                                                                                        <div class="col-3 my-aut"><label for="newPinNumber"><small>Nytt PIN-nummer</small></label></div>
+                                                                                        <div class="col-9"><input type="number" class="form-control" id="newPinNumber" name="newPinNumber"></div>
+                                                                                    </div>
+                                                                                    <div class="row mt-2">
+                                                                                        <div class="col-12 text-center"><button class="btn btn-success" id="updateNewPin">Uppdatera pin kod</button></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                          </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>   
+                                                </div>
+                                              </div>
+                                </div>
+                            </div>
+                            <div class="row" id="savingAccountCreator" style="display:none;">
+                                    <div class="col-12">
+                                            <div class="card mb-3"  style="background:rgba(51, 51, 51, 0.8); color: white; border: 2px solid red;">
+                                                    <div class="card-header">Sparkontohantering</div>
+                                                    <div class="card-body">
+                                                            <div class="container-fluid">
+                                                                    <div class="row">
+                                                                        <div class="col-12 content" style="font-size: 16px;">
+                                                                            <p>Du har ännu inte öppnat ett sparkonto hos Seb bank, klicka på knappen nedan för att öppna ett personligt sparkonto, med ett separat kontonummer och sorteringskod.</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-12">
+                                                                                <button class="btn btn-block mt-2" style="background:green; color: white;" id="openSavings">Open Savings Account</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>                                             
+                                                    </div>
+                                                    <div class="card-footer">
+                                                            <p class="card-text"><small>This sections allows you to eaily manage your savings account.</small></p>
+                                                    </div>
+                                                  </div>
+                                    </div>
+                                </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="scripting/external/jquery/jquery.js"></script>
+    <script src="scripting/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/b-1.5.6/fc-3.2.5/kt-2.5.0/r-2.2.2/datatables.min.js"></script>
+    <script src="qb-banking.js"></script>
+  </body>
+</html>
