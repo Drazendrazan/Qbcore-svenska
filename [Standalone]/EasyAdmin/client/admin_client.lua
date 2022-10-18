@@ -2,6 +2,11 @@
 ------------------------------------
 ---- DONT TOUCH ANY OF THIS IF YOU DON'T KNOW WHAT YOU ARE DOING
 ---- THESE ARE **NOT** CONFIG VALUES, USE THE CONVARS IF YOU WANT TO CHANGE SOMETHING
+----
+----
+---- If you are a developer and want to change something, consider writing a plugin instead:
+---- https://easyadmin.readthedocs.io/en/latest/plugins/
+----
 ------------------------------------
 ------------------------------------
 
@@ -10,6 +15,9 @@ banlist = {}
 cachedplayers = {}
 reports = {}
 add_aces, add_principals = {}, {}
+MessageShortcuts = {}
+FrozenPlayers = {}
+MutedPlayers = {}
 
 local vehicleInfo = {
 	netId = nil,
@@ -28,12 +36,11 @@ end)
 
 RegisterNetEvent("EasyAdmin:SetSetting", function(setting,state)
 	settings[setting] = state
-	if setting == "button" and state ~= "none" then
-		if (not RedM and not tonumber(settings.button)) then
-			RegisterKeyMapping('easyadmin', 'Open EasyAdmin', 'keyboard', settings.button)
-		end
-	end
 end)
+
+if not RedM then
+	RegisterKeyMapping('easyadmin', 'Open EasyAdmin', 'keyboard', "")
+end
 
 AddEventHandler('EasyAdmin:SetLanguage', function(newstrings)
 	strings = newstrings
@@ -75,8 +82,8 @@ RegisterNetEvent("EasyAdmin:ClaimedReport", function(reportData)
 	if _menuPool and _menuPool:IsAnyMenuOpen() then
 		for i, menu in pairs(reportMenus) do
 			for o,item in pairs(menu.Items) do 
-				if item.Text._Text == GetLocalisedText("claimreport") then
-					item.Text._Text = GetLocalisedText("claimedby")
+				if getMenuItemTitle(item) == GetLocalisedText("claimreport") then
+					setMenuItemTitle(item, GetLocalisedText("claimedby"))
 					item:RightLabel(reportData.claimedName)
 				end
 			end
@@ -88,6 +95,36 @@ RegisterNetEvent("EasyAdmin:RemoveReport", function(reportData)
 	reports[reportData.id] = nil 
 end)
 
+
+RegisterNetEvent("EasyAdmin:fillShortcuts", function (shortcuts)
+	MessageShortcuts = shortcuts
+end)
+
+RegisterNetEvent('EasyAdmin:SetPlayerFrozen', function(player,state)
+	FrozenPlayers[player] = state
+	if _menuPool and _menuPool:IsAnyMenuOpen() then
+		if playerMenus[tostring(player)].menu then
+			for o,item in pairs(playerMenus[tostring(player)].menu.Items) do 
+				if getMenuItemTitle(item) == GetLocalisedText("setplayerfrozen") then
+					item.Checked = state
+				end
+			end
+		end
+	end
+end)
+
+RegisterNetEvent('EasyAdmin:SetPlayerMuted', function(player,state)
+	MutedPlayers[player] = state
+	if _menuPool and _menuPool:IsAnyMenuOpen() then
+		if playerMenus[tostring(player)].menu then
+			for o,item in pairs(playerMenus[tostring(player)].menu.Items) do 
+				if getMenuItemTitle(item) == GetLocalisedText("mute") then
+					item.Checked = state
+				end
+			end
+		end
+	end
+end)
 
 Citizen.CreateThread( function()
 	while true do
@@ -149,93 +186,35 @@ RegisterNetEvent("EasyAdmin:requestSpectate", function(playerServerId, tgtCoords
 end)
 
 Citizen.CreateThread(function()
-	RegisterNetEvent("EasyAdmin:requestCleanup", function(type)
+	RegisterNetEvent("EasyAdmin:requestCleanup", function(type, radius)
+
+		local toDelete = {}
+		local deletionText = ""
 		if type == "cars" then
-			
-			local toDelete = GetGamePool("CVehicle")
-			for _,veh in pairs(toDelete) do
-				PrintDebugMessage("starting deletion for veh "..veh, 4)
-				if DoesEntityExist(veh) then
-					if not IsPedAPlayer(GetPedInVehicleSeat(veh, -1)) then
-						if not NetworkHasControlOfEntity(veh) then
-							local i=0
-							repeat 
-								NetworkRequestControlOfEntity(veh)
-								i=i+1
-								Wait(150)
-							until (NetworkHasControlOfEntity(veh) or i==500)
-						end
-						PrintDebugMessage("deleting veh "..veh, 3)
-						
-						-- draw
-						SetTextFont(2)
-						SetTextColour(255, 255, 255, 200)
-						SetTextProportional(1)
-						SetTextScale(0.0, 0.6)
-						SetTextDropshadow(0, 0, 0, 0, 255)
-						SetTextEdge(1, 0, 0, 0, 255)
-						SetTextDropShadow()
-						SetTextOutline()
-						SetTextEntry("STRING")
-						AddTextComponentString(string.format(GetLocalisedText("cleaningcar"), veh))
-						EndTextCommandDisplayText(0.45, 0.95)
-						SetEntityAsNoLongerNeeded(veh)
-						DeleteEntity(veh)
-						Wait(1)
-					end
-				end
-				toDelete[i] = nil
-			end
+			toDelete = GetGamePool("CVehicle")
+			deletionText = GetLocalisedText("cleaningcar")
 		elseif type == "peds" then
-			local toDelete = GetGamePool("CPed")
-			for _,ped in pairs(toDelete) do
-				PrintDebugMessage("starting deletion for ped "..ped, 4)
-				if DoesEntityExist(ped) and not IsPedAPlayer(ped) then
-					if not NetworkHasControlOfEntity(ped) then
-						local i=0
-						repeat 
-							NetworkRequestControlOfEntity(ped)
-							i=i+1
-							Wait(150)
-						until (NetworkHasControlOfEntity(ped) or i==500)
-					end
-					PrintDebugMessage("deleting ped "..ped, 3)
-					
-					-- draw
-					SetTextFont(2)
-					SetTextColour(255, 255, 255, 200)
-					SetTextProportional(1)
-					SetTextScale(0.0, 0.6)
-					SetTextDropshadow(0, 0, 0, 0, 255)
-					SetTextEdge(1, 0, 0, 0, 255)
-					SetTextDropShadow()
-					SetTextOutline()
-					SetTextEntry("STRING")
-					AddTextComponentString(string.format(GetLocalisedText("cleaningped"), ped))
-					EndTextCommandDisplayText(0.45, 0.95)
-					SetEntityAsNoLongerNeeded(ped)
-					DeleteEntity(ped)
-					Wait(1)
-				end
-				toDelete[i] = nil
-			end
-			
+			toDelete = GetGamePool("CPed")
+			deletionText = GetLocalisedText("cleaningped")
 		elseif type == "props" then
-			local toDelete = mergeTables(GetGamePool("CObject"), GetGamePool("CPickup"))
-			for _,object in pairs(toDelete) do
-				PrintDebugMessage("starting deletion for object "..object, 4)
-				if DoesEntityExist(object) then
-					if not NetworkHasControlOfEntity(object) then
+			toDelete = mergeTables(GetGamePool("CObject"), GetGamePool("CPickup"))
+			deletionText = GetLocalisedText("cleaningprop")
+		end
+
+		for _,entity in pairs(toDelete) do
+			PrintDebugMessage("starting deletion for entity "..entity, 4)
+			if DoesEntityExist(entity) then
+				if (type == "cars" and not IsPedAPlayer(GetPedInVehicleSeat(entity, -1))) then
+					if not NetworkHasControlOfEntity(entity) then
 						local i=0
 						repeat 
-							NetworkRequestControlOfEntity(object)
+							NetworkRequestControlOfEntity(entity)
 							i=i+1
 							Wait(150)
-						until (NetworkHasControlOfEntity(object) or i==500)
+						until (NetworkHasControlOfEntity(entity) or i==500)
 					end
-					PrintDebugMessage("deleting object "..object, 3)
-					
-					-- draw
+
+					-- draw text
 					SetTextFont(2)
 					SetTextColour(255, 255, 255, 200)
 					SetTextProportional(1)
@@ -245,22 +224,31 @@ Citizen.CreateThread(function()
 					SetTextDropShadow()
 					SetTextOutline()
 					SetTextEntry("STRING")
-					AddTextComponentString(string.format(GetLocalisedText("cleaningprop"), object))
+					AddTextComponentString(string.format(deletionText, entity))
 					EndTextCommandDisplayText(0.45, 0.95)
-					DetachEntity(object, false, false)
-					if IsObjectAPickup(object) then 
-						RemovePickup(object)
+
+					-- delete entity
+					if radius == "global" then
+						PrintDebugMessage("deleting entity "..entity, 3)
+						SetEntityAsNoLongerNeeded(entity)
+						DeleteEntity(entity)
+					else
+						local entityCoords = GetEntityCoords(entity)
+						local playerCoords = GetEntityCoords(PlayerPedId())
+						if #(playerCoords - entityCoords) < radius then
+							PrintDebugMessage("deleting entity "..entity, 3)
+							SetEntityAsNoLongerNeeded(entity)
+							DeleteEntity(entity)
+						end
 					end
-					SetEntityAsNoLongerNeeded(object)
-					DeleteEntity(object)
 					Wait(1)
 				end
 				toDelete[i] = nil
 			end
 		end
-		TriggerEvent("EasyAdmin:showNotification", string.format(GetLocalisedText("finishedcleaning"), GetLocalisedText(type)))
 	end)
 end)
+
 Citizen.CreateThread( function()
 	while true do
 		Citizen.Wait(500)

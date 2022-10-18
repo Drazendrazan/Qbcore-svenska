@@ -40,7 +40,7 @@
     "adminunmutedplayer": "**%s** unmuted **%s**",
     "playermuted": "a été mis en sourdine!",
     "playerunmuted": "a été mis en sans sourdine!",
-    "playermute": "Vous êtes ^8muet^7!",
+    "playermute": "Vous êtes muet!",
     "confirmbanguide": "~r~~h~NOTE:~h~~w~ Appuyer sur confirmer va ~r~~h~bannir~h~~w~ le joueur avec les paramètres specifiés.",
     "spectateplayer": "Regarder le joueur",
     "teleportplayer": "Téléportation",
@@ -78,24 +78,17 @@
     "armor": "Armure",
     "wantedlevel": "Niveau de recherche",
     "exitspectator": "Appuyer sur E pour quitter le mode spectateur",
-    "chatsuggestionban": "Bannir un joueur",
-    "chatsuggestionkick": "Expulser un joueur",
-    "chatsuggestionspectate": "Regarder un joueur",
-    "chatsuggestionunban": "Débannir un ID de joueur",
-    "chatsuggestionteleport": "Téléporté a un joueur",
-    "chatsuggestiongametype": "Changer le type de jeu du serveur",
-    "chatsuggestionmapname": "Changer la carte du serveur",
-    "chatsuggestionslap": "Vous allez pousser un joueur.",
-    "chatsuggestionfreeze": "Vous allez freeze un joueur.",
 
+    "allowlist": "You are not allowlisted on this server",
+    "checkingallowlist": "Checking allowlist..",
     "bannedjoin": "Vous avez été banni du serveur, \nRaison : %s, Expiration du bannissement : %s, Ban ID: %s",
     "kicked": "Éjecté par %s, Raison : %s",
     "banned": "Vous avez été banni du serveur, \nRaison : %s, Expiration du bannissement : %s",
     "reasonadd": " ( Pseudo : %s ), banni par : %s",
-    "bancheating": "Banni pour triche",
-    "bancheatingadd": " ( Pseudo: %s )",
     "nongiven": "Non autorisé",
-    "newadmin": "Vous êtes maintenant un administrateur",
+    "announcement": "Announcement",
+    "announcementguide": "Send an announcement to all players",
+    "adminannouncement": "**%s** sent an announcement: **%s**",
     "playernotfound": "Le joueur n'a pas été trouvé.",
     "done": "Fait!",
     "adminkickedplayer": "**%s** a expulser **%s**, Raison: %s",
@@ -175,7 +168,11 @@
     "cleaningped": "Suppression Ped %s",
     "cleaningprop": "Suppression d'un objet %s",
     "finishedcleaning": "Nettoyage terminé %s",
-    "admincleanedup": "**%s** Tout nettoyé **%s** dans leur domaine.",
+    "admincleanedup": "**%s** Nettoyé tous les **%s** dans un rayon de **%s**.",
+    "radius": "Radius",
+    "type": "Type",
+    "deepclean":"Deep Clean",
+    "deepcleanguide":"Also deletes clientside entities.",
 
     "forceeasteregg": "Forcer Easter Egg",
 
@@ -190,7 +187,7 @@
     "addprincipal": "~g~Ajouter Principal",
     "group": "Grouper",
     "entergroup": "Entrez le nom du groupe (e.g. group.admin)",
-    "enterperm": "Entrez le nom de l'autorisation (e.g. easyadmin.kick)",
+    "enterperm": "Entrez le nom de l'autorisation (e.g. easyadmin.player.kick)",
     "state": "État",
     "stateguide": "Refuser les autorisations ne fonctionne pas correctement, n'autorisez que les autorisations que vous souhaitez que le joueur ait.",
     "location": "Emplacement",
@@ -232,10 +229,14 @@
     "adminimmune":"Vous n'avez pas la permission d'effectuer cette action, le joueur ciblé est immunisé.",
     "teleportmeback":"Téléporter moi dos",
     "teleportplayerback":"Téléporter le joueur dos",
+    "teleportintoclosestvehicle":"into closest vehicle",
+
     "copiedtoclipboard":"Texte copié dans le presse-papiers!",
 
     "spectatevehicleseatoccupied":"Le siège du véhicule dans lequel vous étiez est maintenant occupé.",
-    "spectatenovehiclefound":"Le véhicule dans lequel vous étiez est introuvable."
+    "spectatenovehiclefound":"Le véhicule dans lequel vous étiez est introuvable.",
+    "screenreader":"Screen Reader (TTS)",
+    "screenreaderguide":"Enables Text to Speech for the GUI"
 
 
 }]

@@ -24,9 +24,11 @@ permissions = {
 	["server.permissions.write"] = false,
 	["server.shortcut.add"] = false,
 	["server.reminder.add"] = false,
+	["server.announce"] = false,
 	["server.convars"] = false,
 	["server.resources.start"] = false,
 	["server.resources.stop"] = false,
+	["server.chat"] = false,
 	
 	["immune"] = false,
 	["anon"] = false,
@@ -78,6 +80,35 @@ if not IsDuplicityVersion() then
 		keyboardState = data.state
 		cb('ok')
 	end)
+
+	function ttsSpeechItem(item)
+		local ttsText = ""
+		if not item or GetResourceKvpInt('ea_tts') == 0 then return end
+		if type(item.Text) == "table" then
+			if item.Text._Text then
+				ttsText = item.Text._Text
+				if item.Label then
+					ttsText = ttsText .. ", " .. item.Label.Text._Text
+				end
+			end
+		elseif type(item.Text) == "function" then
+			ttsText = item.Base.Text._Text
+			if item.Checked == true then
+				ttsText = ttsText .. ", Checked"
+			elseif item.Checked == false then
+				ttsText = ttsText .. ", Unchecked"
+			end
+			if item.ItemText then 
+				ttsText = ttsText .. ", " .. item.ItemText._Text
+			end
+		end
+		SendNUIMessage({action= "speak", text=ttsText})
+	end
+	
+	function ttsSpeechText(text)
+		if not text or GetResourceKvpInt('ea_tts') == 0 then return end
+		SendNUIMessage({action= "speak", text=text})
+	end	
 end
 
 
@@ -143,9 +174,10 @@ function DoesPlayerHavePermission(player, object)
 		end
 		return haspermission
 	else
-		return permissions[object]
+		return (permissions[object] or false)
 	end
 end
+exports('DoesPlayerHavePermission', DoesPlayerHavePermission)
 
 function DoesPlayerHavePermissionForCategory(player, object)
 	for perm in pairs(permissions) do
@@ -157,6 +189,7 @@ function DoesPlayerHavePermissionForCategory(player, object)
 	end
 	return false
 end
+exports('DoesPlayerHavePermissionForCategory', DoesPlayerHavePermissionForCategory)
 
 
 function GetVersion()
@@ -165,7 +198,17 @@ function GetVersion()
 	local is_master = GetResourceMetadata(resourceName, 'is_master', 0) == "yes" or false
 	return version, is_master
 end
+exports('GetVersion', GetVersion)
 
+
+function loadLanguageStrings()
+	local strfile = LoadResourceFile(GetCurrentResourceName(), "language/"..GetConvar("ea_LanguageName", "en")..".json")
+	if strfile then
+		strings = json.decode(strfile)[1]
+	else
+		strings = {language=GetConvar("ea_LanguageName", "en")}
+	end
+end
 
 function GetLocalisedText(string)
 	if not strings then return "Strings not Loaded yet!" end
@@ -176,13 +219,16 @@ function GetLocalisedText(string)
 		return "String "..string.." not found in "..strings.language
 	end
 end
+exports('GetLocalisedText', GetLocalisedText)
 
 function formatDateString(string)
 	local dateFormat = GetConvar("ea_dateFormat", '%d/%m/%Y 	%H:%M:%S')
 	return os.date(dateFormat, string)
 end
+exports('formatDateString', formatDateString)
 
 function formatShortcuts(thisstring)
+	if not thisstring then return thisstring end
 	local cleanString = string.gsub(string.lower(thisstring), " ", "")
 	for shortcut,value in pairs(MessageShortcuts) do
 		if string.lower(shortcut) == cleanString then
@@ -191,6 +237,44 @@ function formatShortcuts(thisstring)
 	end
 	return thisstring
 end
+exports('formatShortcuts', formatShortcuts)
+
+function formatRightString(thisstring, customWidth)
+	if not thisstring then return thisstring end -- in case string is nil, just yeet it back.
+	local width = (customWidth or maxRightTextWidth)
+	if string.len(thisstring) > width then
+		thisstring = string.sub(thisstring, 1, width)..".."
+	end
+
+	return thisstring
+end
+
+
+-- some util funcs so i dont have to mess with NativeUI Source Code.
+function getMenuItemTitle(item)
+	if (item.Base and type(item.Base.Text) == "table" and item.Base.Text._Text) then
+		return item.Base.Text._Text
+	elseif (item.Text and type(item.Text) == "table" and item.Text._Text) then
+		return item.Text._Text
+	end
+end
+
+function setMenuItemTitle(item,text)
+	if (item.Base and type(item.Base.Text) == "table" and item.Base.Text._Text) then
+		item.Base.Text._Text = text
+	elseif (item.Text and type(item.Text) == "table" and item.Text._Text) then
+		item.Text._Text = text
+	end
+end
+
+function getCachedPlayer(playerId)
+	if CachedPlayers[playerId] then
+		return CachedPlayers[playerId]
+	else
+		return false
+	end
+end
+exports('getCachedPlayer', getCachedPlayer)
 
 function math.round(num, numDecimalPlaces)
 	if numDecimalPlaces and numDecimalPlaces>0 then
@@ -283,3 +367,4 @@ function matchURL(text_with_URLs)
 		end
 	end
 end
+exports('matchURL', matchURL)
